@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>kle zag</title>
+<style>
+    body {
+        margin: 0;
+        background: #ffd5ea;
+        overflow: hidden;
+        font-family: "Comic Sans MS", sans-serif;
+    }
+
+    .msg {
+        position: absolute;
+        top: 20px;
+        width: 100%;
+        text-align: center;
+        font-size: 32px;
+        color: #ff4da6;
+        font-weight: bold;
+        text-shadow: 0 0 10px white;
+        animation: bounce 2s infinite ease-in-out;
+    }
+
+    @keyframes bounce {
+        0% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0); }
+    }
+
+    .flower {
+        position: absolute;
+        width: 120px;
+        animation: float 8s infinite ease-in-out;
+        opacity: 0.95;
+        filter: drop-shadow(0 0 6px #ff9ecf);
+    }
+
+    @keyframes float {
+        0% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-40px) rotate(10deg); }
+        100% { transform: translateY(0) rotate(0deg); }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="msg">kle zag i miss u 😂🌸</div>
+
+<script>
+    const flowers = [
+        "https://i.imgur.com/Kz5QX0M.png",  // pink rose
+        "https://i.imgur.com/PtQe8zD.png",  // tulip
+        "https://i.imgur.com/4zjN1gA.png"   // another flower
+    ];
+
+    for (let i = 0; i < 12; i++) {
+        let img = document.createElement("img");
+        img.src = flowers[Math.floor(Math.random() * flowers.length)];
+        img.className = "flower";
+
+        img.style.left = Math.random() * 90 + "vw";
+        img.style.top = Math.random() * 70 + 20 + "vh";
+        img.style.animationDuration = (6 + Math.random() * 4) + "s";
+
+        document.body.appendChild(img);
+    }
+</script>
+
+</body>
+</html>
