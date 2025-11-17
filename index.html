@@ -9,46 +9,87 @@
         margin: 0;
         background: #ffd6e8;
         font-family: "Poppins", sans-serif;
-        overflow: hidden;
+        overflow-x: hidden;
         height: 100vh;
     }
 
     .container {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-        width: 90%;
         max-width: 500px;
+        margin: auto;
+        padding-top: 60px;
+        text-align: center;
     }
 
     h1 {
-        font-size: 36px;
+        font-size: 38px;
         font-weight: 600;
         color: #cc0055;
-        margin-bottom: 20px;
-        letter-spacing: 1px;
     }
 
     input {
-        width: 100%;
+        width: 90%;
         padding: 15px;
+        margin-top: 20px;
         border-radius: 12px;
         border: none;
         font-size: 18px;
         text-align: center;
         outline: none;
-        background: white;
         box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
     #response {
-        margin-top: 25px;
+        margin-top: 20px;
         font-size: 22px;
         color: #b30047;
         opacity: 0;
         transition: 1s;
+    }
+
+    /* Loading bar */
+    #loadingBox {
+        width: 90%;
+        height: 20px;
+        border-radius: 10px;
+        background: #fff1f7;
+        margin: 30px auto;
+        overflow: hidden;
+        display: none;
+    }
+
+    #loadingBar {
+        width: 0%;
+        height: 100%;
+        background: #ff4d94;
+        transition: width 0.3s;
+    }
+
+    #loadingText {
+        margin-top: 10px;
+        font-size: 18px;
+        color: #b30047;
+        opacity: 0;
+        transition: 1s;
+    }
+
+    /* Yes / No buttons */
+    .btn {
+        padding: 12px 30px;
+        font-size: 18px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        margin: 10px;
+        transition: 0.2s;
+    }
+
+    #yesBtn {
+        background: #ff99c8;
+    }
+
+    #noBtn {
+        background: #ffccd5;
+        position: relative;
     }
 
     /* Floating petals */
@@ -68,32 +109,98 @@
         100% { transform: translateY(110vh) rotate(360deg); }
     }
 </style>
-
 </head>
+
 <body>
 
 <div class="container">
     <h1>kle zag, I miss u</h1>
+
+    <!-- typing -->
     <input id="textInput" placeholder="type something here">
     <div id="response"></div>
+
+    <!-- loading -->
+    <div id="loadingBox">
+        <div id="loadingBar"></div>
+    </div>
+    <div id="loadingText"></div>
+
+    <!-- funny yes/no -->
+    <h2 style="margin-top:40px; color:#cc0055;">do you love me?</h2>
+    <button id="yesBtn" class="btn">yes</button>
+    <button id="noBtn" class="btn">no</button>
 </div>
 
 <script>
-    // When she types and presses Enter
     const input = document.getElementById("textInput");
     const res = document.getElementById("response");
+    const loadBox = document.getElementById("loadingBox");
+    const loadBar = document.getElementById("loadingBar");
+    const loadText = document.getElementById("loadingText");
 
     input.addEventListener("keypress", function(e) {
         if (e.key === "Enter") {
-            const text = input.value.trim();
-            if (text.length > 0) {
-                res.innerHTML = "thank you for typing. i hope you know i care about you.";
+            const text = input.value.trim().toLowerCase();
+
+            // her name easter egg
+            if (text === "hername" || text === "her name") {
+                res.innerHTML = "even your name looks cute.";
                 res.style.opacity = 1;
+                return;
             }
+
+            // forbidden word joke
+            if (text === "hlaf" || text === "shi") {
+                res.innerHTML = "why you typing this…";
+                res.style.opacity = 1;
+                return;
+            }
+
+            // normal message
+            res.innerHTML = "thank you for typing. i hope you know i care about you.";
+            res.style.opacity = 1;
+
+            // loading animation
+            startLoading();
         }
     });
 
-    // Floating petals
+    function startLoading() {
+        loadBox.style.display = "block";
+        loadText.style.opacity = 1;
+
+        let percent = 0;
+        let interval = setInterval(() => {
+            percent += 10;
+            loadBar.style.width = percent + "%";
+
+            if (percent === 30) loadText.innerHTML = "checking your heart rate…";
+            if (percent === 60) loadText.innerHTML = "calculating how much you miss me…";
+            if (percent === 90) loadText.innerHTML = "loading love…";
+
+            if (percent >= 100) {
+                clearInterval(interval);
+                loadText.innerHTML = "done.";
+            }
+        }, 400);
+    }
+
+    // yes/no button funny
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+
+    yesBtn.onclick = () => {
+        alert("good.");
+    };
+
+    noBtn.onmouseover = function() {
+        const x = Math.random() * 300 - 150;
+        const y = Math.random() * 200 - 100;
+        noBtn.style.transform = `translate(${x}px, ${y}px)`;
+    };
+
+    // petals
     for (let i = 0; i < 35; i++) {
         let petal = document.createElement("div");
         petal.className = "petal";
