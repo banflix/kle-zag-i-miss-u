@@ -102,6 +102,57 @@
         transition: width 0.25s;
     }
 
+    /* Heart tap game */
+    #heartGame {
+        background: #ffe1ee;
+        color: #b30047;
+        font-size: 22px;
+    }
+
+    #heartShape {
+        width: 80px;
+        height: 80px;
+        background: #ff4d94;
+        position: relative;
+        transform: rotate(-45deg);
+        margin-bottom: 15px;
+        animation: heartbeat 0.8s infinite;
+        cursor: pointer;
+    }
+
+    #heartShape::before,
+    #heartShape::after {
+        content: "";
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        background: #ff4d94;
+        border-radius: 50%;
+    }
+
+    #heartShape::before {
+        top: -40px;
+        left: 0;
+    }
+
+    #heartShape::after {
+        left: 40px;
+        top: 0;
+    }
+
+    #heartText {
+        font-size: 18px;
+        margin-top: 5px;
+    }
+
+    @keyframes heartbeat {
+        0% { transform: rotate(-45deg) scale(1); }
+        25% { transform: rotate(-45deg) scale(1.1); }
+        50% { transform: rotate(-45deg) scale(1); }
+        75% { transform: rotate(-45deg) scale(1.1); }
+        100% { transform: rotate(-45deg) scale(1); }
+    }
+
     /* Falling petals */
     .petal {
         position: absolute;
@@ -159,7 +210,7 @@
 
     <!-- Q5 -->
     <div id="q5" style="display:none;">
-        <h2>do u think im gay?</h2>
+        <h2>do u think im cute?</h2>
         <button id="yes5" class="btn btn-main">yes</button>
         <button id="idk5" class="btn btn-soft">idk</button>
         <div id="msg5" class="msg"></div>
@@ -198,7 +249,13 @@
     <p>reason: your answers are suspicious.</p>
 </div>
 
-<!-- Fake loading screen -->
+<!-- Heart tap mini-game -->
+<div id="heartGame" class="overlay">
+    <div id="heartShape"></div>
+    <div id="heartText">tap the heart 10 times to continue</div>
+</div>
+
+<!-- Fake loading / IQ test screen -->
 <div id="loadingScreen" class="overlay">
     <p>processing your results...</p>
     <div id="loadingBarOuter">
@@ -210,10 +267,11 @@
 <!-- Final sweet message -->
 <div id="finalSweet" class="overlay">
     <p>relax. this was all a joke.</p>
-    <p>GO STUDY NIGGA</p>
+    <p>conclusion: you pass. and you are perfect.</p>
 </div>
 
 <script>
+    // Helper: go to specific question
     function go(next) {
         q1.style.display = "none";
         q2.style.display = "none";
@@ -226,16 +284,26 @@
         next.style.display = "block";
     }
 
+    // Helper: runaway button (mouse + touch)
     function runaway(btn) {
         function move() {
             const x = Math.random() * 260 - 130;
             const y = Math.random() * 200 - 100;
             btn.style.transform = `translate(${x}px, ${y}px)`;
+            vibrate(80);
         }
         btn.onmouseover = move;
         btn.ontouchstart = move;
     }
 
+    // Helper: vibration (works only on some phones)
+    function vibrate(ms) {
+        if (navigator.vibrate) {
+            navigator.vibrate(ms);
+        }
+    }
+
+    // Question containers
     const q1 = document.getElementById("q1");
     const q2 = document.getElementById("q2");
     const q3 = document.getElementById("q3");
@@ -245,6 +313,7 @@
     const q7 = document.getElementById("q7");
     const q8 = document.getElementById("q8");
 
+    // Messages
     const msg1 = document.getElementById("msg1");
     const msg2 = document.getElementById("msg2");
     const msg3 = document.getElementById("msg3");
@@ -254,75 +323,198 @@
     const msg7 = document.getElementById("msg7");
     const msg8 = document.getElementById("msg8");
 
-    const errorScreen = document.getElementById("errorScreen");
-    const loadingScreen = document.getElementById("loadingScreen");
-    const finalSweet = document.getElementById("finalSweet");
+    // Buttons
+    const yes1 = document.getElementById("yes1");
+    const no1 = document.getElementById("no1");
 
+    const yes2 = document.getElementById("yes2");
+    const no2 = document.getElementById("no2");
+
+    const meBtn = document.getElementById("meBtn");
+    const foodBtn = document.getElementById("foodBtn");
+
+    const yes4 = document.getElementById("yes4");
+    const no4 = document.getElementById("no4");
+
+    const yes5 = document.getElementById("yes5");
+    const idk5 = document.getElementById("idk5");
+
+    const yes6 = document.getElementById("yes6");
+    const no6 = document.getElementById("no6");
+
+    const r10 = document.getElementById("r10");
+    const r9 = document.getElementById("r9");
+    const r8 = document.getElementById("r8");
+
+    const saveMe = document.getElementById("saveMe");
+    const savePhone = document.getElementById("savePhone");
+
+    // Overlays
+    const errorScreen = document.getElementById("errorScreen");
+    const heartGame = document.getElementById("heartGame");
+    const heartShape = document.getElementById("heartShape");
+    const heartText = document.getElementById("heartText");
+
+    const loadingScreen = document.getElementById("loadingScreen");
     const loadingBarInner = document.getElementById("loadingBarInner");
     const loadingText = document.getElementById("loadingText");
 
+    const finalSweet = document.getElementById("finalSweet");
+
     // Q1
-    yes1.onclick = () => { msg1.innerHTML = "good."; msg1.style.opacity = 1; setTimeout(() => go(q2), 1100); };
+    yes1.onclick = () => {
+        msg1.innerHTML = "good.";
+        msg1.style.opacity = 1;
+        setTimeout(() => go(q2), 1100);
+    };
     runaway(no1);
 
     // Q2
-    yes2.onclick = () => { msg2.innerHTML = "i knew it."; msg2.style.opacity = 1; setTimeout(() => go(q3), 1100); };
-    no2.onclick = () => { msg2.innerHTML = "sure."; msg2.style.opacity = 1; setTimeout(() => go(q3), 1100); };
+    yes2.onclick = () => {
+        msg2.innerHTML = "i knew it.";
+        msg2.style.opacity = 1;
+        setTimeout(() => go(q3), 1100);
+    };
+    no2.onclick = () => {
+        msg2.innerHTML = "sure.";
+        msg2.style.opacity = 1;
+        setTimeout(() => go(q3), 1100);
+    };
 
     // Q3
-    meBtn.onclick = () => { msg3.innerHTML = "correct answer."; msg3.style.opacity = 1; setTimeout(() => go(q4), 1100); };
+    meBtn.onclick = () => {
+        msg3.innerHTML = "correct answer.";
+        msg3.style.opacity = 1;
+        setTimeout(() => go(q4), 1100);
+    };
     foodBtn.onclick = () => {
         msg3.innerHTML = "wow. food over me.";
         msg3.style.opacity = 1;
+        vibrate(150);
         setTimeout(() => errorScreen.style.display = "flex", 900);
-        setTimeout(() => { errorScreen.style.display = "none"; go(q4); }, 2600);
+        setTimeout(() => {
+            errorScreen.style.display = "none";
+            go(q4);
+        }, 2600);
     };
 
     // Q4
     yes4.onclick = () => {
+        vibrate(200);
         setTimeout(() => errorScreen.style.display = "flex", 600);
-        setTimeout(() => { errorScreen.style.display = "none"; go(q5); }, 2600);
+        setTimeout(() => {
+            errorScreen.style.display = "none";
+            go(q5);
+        }, 2600);
     };
-    no4.onclick = () => { msg4.innerHTML = "good."; msg4.style.opacity = 1; setTimeout(() => go(q5), 1100); };
+    no4.onclick = () => {
+        msg4.innerHTML = "good.";
+        msg4.style.opacity = 1;
+        setTimeout(() => go(q5), 1100);
+    };
 
     // Q5
-    yes5.onclick = () => { msg5.innerHTML = "good answer."; msg5.style.opacity = 1; setTimeout(() => go(q6), 1100); };
+    yes5.onclick = () => {
+        msg5.innerHTML = "good answer.";
+        msg5.style.opacity = 1;
+        setTimeout(() => go(q6), 1100);
+    };
     idk5.onclick = () => {
         msg5.innerHTML = "wrong.";
         msg5.style.opacity = 1;
+        vibrate(200);
         setTimeout(() => errorScreen.style.display = "flex", 900);
-        setTimeout(() => { errorScreen.style.display = "none"; go(q6); }, 2600);
+        setTimeout(() => {
+            errorScreen.style.display = "none";
+            go(q6);
+        }, 2600);
     };
 
     // Q6
-    yes6.onclick = () => { msg6.innerHTML = "ok next."; msg6.style.opacity = 1; setTimeout(() => go(q7), 1100); };
-    no6.onclick = () => { msg6.innerHTML = "too bad."; msg6.style.opacity = 1; setTimeout(() => go(q7), 1100); };
+    yes6.onclick = () => {
+        msg6.innerHTML = "ok next.";
+        msg6.style.opacity = 1;
+        setTimeout(() => go(q7), 1100);
+    };
+    no6.onclick = () => {
+        msg6.innerHTML = "too bad.";
+        msg6.style.opacity = 1;
+        setTimeout(() => go(q7), 1100);
+    };
 
-    // Q7 – rate
-    r10.onclick = () => { msg7.innerHTML = "correct."; msg7.style.opacity = 1; setTimeout(() => go(q8), 1100); };
-    r9.onclick = () => { errorScreen.style.display = "flex"; setTimeout(() => { errorScreen.style.display = "none"; go(q8); }, 2500); };
-    r8.onclick = () => { errorScreen.style.display = "flex"; setTimeout(() => { errorScreen.style.display = "none"; go(q8); }, 2500); };
+    // Q7 – rate me
+    r10.onclick = () => {
+        msg7.innerHTML = "correct.";
+        msg7.style.opacity = 1;
+        setTimeout(() => go(q8), 1100);
+    };
+    r9.onclick = () => {
+        vibrate(200);
+        errorScreen.style.display = "flex";
+        setTimeout(() => {
+            errorScreen.style.display = "none";
+            go(q8);
+        }, 2500);
+    };
+    r8.onclick = () => {
+        vibrate(200);
+        errorScreen.style.display = "flex";
+        setTimeout(() => {
+            errorScreen.style.display = "none";
+            go(q8);
+        }, 2500);
+    };
 
     // Q8 – save me or phone
     saveMe.onclick = () => {
         msg8.innerHTML = "good.";
         msg8.style.opacity = 1;
-        setTimeout(() => startLoading(), 1200);
+        setTimeout(() => showHeartGame(), 1200);
     };
 
     savePhone.onclick = () => {
         msg8.innerHTML = "wow.";
         msg8.style.opacity = 1;
+        vibrate(250);
         setTimeout(() => errorScreen.style.display = "flex", 900);
-        setTimeout(() => { errorScreen.style.display = "none"; startLoading(); }, 2600);
+        setTimeout(() => {
+            errorScreen.style.display = "none";
+            showHeartGame();
+        }, 2600);
     };
 
-    // loading -> sweet end
+    // Heart tap mini-game
+    let tapCount = 0;
+    function showHeartGame() {
+        tapCount = 0;
+        heartText.innerHTML = "tap the heart 10 times to continue";
+        heartGame.style.display = "flex";
+    }
+
+    heartShape.onclick = () => {
+        tapCount++;
+        vibrate(40);
+        heartText.innerHTML = "taps: " + tapCount + " / 10";
+        if (tapCount >= 10) {
+            heartGame.style.display = "none";
+            startLoading();
+        }
+    };
+
+    // Loading + fake IQ test
     function startLoading() {
         loadingScreen.style.display = "flex";
+        loadingBarInner.style.width = "0%";
         let percent = 0;
         let step = 0;
-        const texts = ["checking your answers...", "measuring how much u miss me...", "calculating if u pass...", "almost done..."];
+        const texts = [
+            "checking your answers...",
+            "measuring how much u miss me...",
+            "calculating iq...",
+            "deciding if you pass..."
+        ];
+        loadingText.innerHTML = texts[0];
+
         const interval = setInterval(() => {
             percent += 10;
             loadingBarInner.style.width = percent + "%";
@@ -338,7 +530,7 @@
         }, 300);
     }
 
-    // petals
+    // Petals
     for (let i = 0; i < 35; i++) {
         let petal = document.createElement("div");
         petal.className = "petal";
@@ -350,4 +542,3 @@
 
 </body>
 </html>
-
