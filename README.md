@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>for you</title>
+
+<style>
+    body {
+        margin: 0;
+        background: #ffd6e8;
+        font-family: "Poppins", sans-serif;
+        overflow: hidden;
+    }
+
+    .container {
+        max-width: 500px;
+        margin: auto;
+        padding-top: 50px;
+        text-align: center;
+    }
+
+    h2 {
+        font-size: 28px;
+        font-weight: 600;
+        color: #cc0055;
+        margin-bottom: 25px;
+    }
+
+    .btn {
+        padding: 12px 30px;
+        font-size: 18px;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        margin: 8px;
+        transition: 0.2s;
+    }
+
+    .btn-main { background:#ff99c8; }
+    .btn-soft { background:#ffccd5; }
+
+    .msg {
+        margin-top: 20px;
+        font-size: 20px;
+        color: #b30047;
+        opacity: 0;
+        transition: 0.4s;
+    }
+
+    /* overlays */
+    .overlay {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        text-align: center;
+        z-index: 9999;
+    }
+
+    #errorScreen { background:black; color:white; font-size:22px; }
+    #gpsScreen { background:#ffe1ee; color:#b30047; font-size:22px; }
+    #loadingScreen { background:#ffe1ee; color:#b30047; font-size:22px; }
+    #finalSweet  { background:#ffe1ee; color:#b30047; font-size:26px; }
+
+    #loadingBarOuter {
+        width:70%; height:18px;
+        background:#ffd6e8;
+        border-radius:10px;
+        overflow:hidden;
+        margin-top:15px;
+    }
+    #loadingBarInner {
+        width:0%; height:100%;
+        background:#ff4d94;
+        transition:width 0.25s;
+    }
+
+    /* heart game */
+    #heartGame { background:#ffe1ee; color:#b30047; font-size:22px; }
+    #heartShape {
+        width:80px; height:80px;
+        background:#ff4d94;
+        position:relative;
+        transform:rotate(-45deg);
+        margin-bottom:10px;
+        cursor:pointer;
+        animation:heartbeat 0.8s infinite;
+    }
+    #heartShape::before,
+    #heartShape::after {
+        content:"";
+        position:absolute;
+        width:80px; height:80px;
+        background:#ff4d94;
+        border-radius:50%;
+    }
+    #heartShape::before { top:-40px; left:0; }
+    #heartShape::after  { top:0; left:40px;}
+
+    @keyframes heartbeat {
+        0% {transform:rotate(-45deg) scale(1);}
+        50% {transform:rotate(-45deg) scale(1.15);}
+        100%{transform:rotate(-45deg) scale(1);}
+    }
+
+    /* petals */
+    .petal {
+        position:absolute;
+        top:-10px;
+        width:14px; height:18px;
+        background:pink;
+        border-radius:70% 70% 50% 50%;
+        opacity:0.6;
+        animation:fall linear infinite;
+    }
+    @keyframes fall {
+        0%   {transform:translateY(0) rotate(0deg);}
+        100% {transform:translateY(110vh) rotate(360deg);}
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Q1 -->
+    <div id="q1">
+        <h2>do u miss me?</h2>
+        <button id="yes1" class="btn btn-main">yes</button>
+        <button id="no1" class="btn btn-soft">no</button>
+        <div id="msg1" class="msg"></div>
+    </div>
+
+    <!-- Q2 -->
+    <div id="q2" style="display:none;">
+        <h2>do u stalk my profile?</h2>
+        <button id="yes2" class="btn btn-main">yes</button>
+        <button id="no2" class="btn btn-soft">no</button>
+        <div id="msg2" class="msg"></div>
+    </div>
+
+    <!-- Q3 -->
+    <div id="q3" style="display:none;">
+        <h2>who would u choose?</h2>
+        <button id="meBtn" class="btn btn-main">you</button>
+        <button id="foodBtn" class="btn btn-soft">food</button>
+        <div id="msg3" class="msg"></div>
+    </div>
+
+    <!-- Q5 (next after q3 now) -->
+    <div id="q5" style="display:none;">
+        <h2>do u think im cute?</h2>
+        <button id="yes5" class="btn btn-main">yes</button>
+        <button id="idk5" class="btn btn-soft">idk</button>
+        <div id="msg5" class="msg"></div>
+    </div>
+
+    <!-- Q6 -->
+    <div id="q6" style="display:none;">
+        <h2>are u tired of these questions?(idc)</h2>
+        <button id="yes6" class="btn btn-soft">yes</button>
+        <button id="no6" class="btn btn-main">no</button>
+        <div id="msg6" class="msg"></div>
+    </div>
+
+    <!-- Q7 -->
+    <div id="q7" style="display:none;">
+        <h2>rate me out of 10</h2>
+        <button id="r10" class="btn btn-main">10</button>
+        <button id="r9" class="btn btn-soft">9</button>
+        <button id="r8" class="btn btn-soft">8</button>
+        <div id="msg7" class="msg"></div>
+    </div>
+
+    <!-- Q8 -->
+    <div id="q8" style="display:none;">
+        <h2>whats my nickname</h2>
+        <button id="saveMe" class="btn btn-main">ya 7lo</button>
+        <button id="savePhone" class="btn btn-soft">baskot</button>
+        <div id="msg8" class="msg"></div>
+    </div>
+
+</div>
+
+<!-- GPS overlay (feature #14) -->
+<div id="gpsScreen" class="overlay">
+    <p>checking your location...</p>
+    <p id="gpsText" style="margin-top:10px;"></p>
+</div>
+
+<!-- Error screen -->
+<div id="errorScreen" class="overlay">
+    <p>system error.</p>
+    <p>reason: your answers are suspicious.</p>
+</div>
+
+<!-- Heart tap mini-game -->
+<div id="heartGame" class="overlay">
+    <div id="heartShape"></div>
+    <p id="heartText">tap the heart 10 times to continue</p>
+</div>
+
+<!-- Loading IQ test -->
+<div id="loadingScreen" class="overlay">
+    <p>processing your results...</p>
+    <div id="loadingBarOuter"><div id="loadingBarInner"></div></div>
+    <p id="loadingText" style="margin-top:10px; font-size:18px;"></p>
+</div>
+
+<!-- Final sweet message -->
+<div id="finalSweet" class="overlay">
+    <p>relax. this was all a joke.</p>
+    <p>and you passed everything.</p>
+    <p>love u bestie</p>
+</div>
+
+<script>
+// small helpers
+function go(next){
+    [q1,q2,q3,q5,q6,q7,q8].forEach(e=>e.style.display="none");
+    next.style.display="block";
+}
+function vibrate(ms){ if(navigator.vibrate){navigator.vibrate(ms);} }
+function runaway(btn){
+    function move(){
+        btn.style.transform=`translate(${Math.random()*260-130}px, ${Math.random()*200-100}px)`;
+        vibrate(80);
+    }
+    btn.onmouseover=move;
+    btn.ontouchstart=move;
+}
+
+// question refs
+const q1=document.getElementById("q1");
+const q2=document.getElementById("q2");
+const q3=document.getElementById("q3");
+const q5=document.getElementById("q5");
+const q6=document.getElementById("q6");
+const q7=document.getElementById("q7");
+const q8=document.getElementById("q8");
+
+// messages
+const msg1=msg("msg1"), msg2=msg("msg2"), msg3=msg("msg3"),
+      msg5e=msg("msg5"), msg6e=msg("msg6"),
+      msg7e=msg("msg7"), msg8e=msg("msg8");
+
+function msg(id){ return document.getElementById(id); }
+
+// buttons
+const yes1=el("yes1"), no1=el("no1");
+const yes2=el("yes2"), no2=el("no2");
+const meBtn=el("meBtn"), foodBtn=el("foodBtn");
+const yes5=el("yes5"), idk5=el("idk5");
+const yes6=el("yes6"), no6=el("no6");
+const r10=el("r10"), r9=el("r9"), r8=el("r8");
+const saveMe=el("saveMe"), savePhone=el("savePhone");
+
+function el(id){ return document.getElementById(id); }
+
+// overlays
+const gpsScreen=el("gpsScreen"), gpsText=el("gpsText");
+const errorScreen=el("errorScreen");
+const heartGame=el("heartGame");
+const heartShape=el("heartShape"), heartText=el("heartText");
+const loadingScreen=el("loadingScreen");
+const loadingBarInner=el("loadingBarInner"), loadingText=el("loadingText");
+const finalSweet=el("finalSweet");
+
+// Q1
+yes1.onclick=()=>{ msg1.innerHTML="good."; msg1.style.opacity=1; setTimeout(()=>go(q2),1100); };
+runaway(no1);
+
+// Q2
+yes2.onclick=()=>{ msg2.innerHTML="i knew it."; msg2.style.opacity=1; setTimeout(()=>go(q3),1100); };
+no2.onclick =()=>{ msg2.innerHTML="sure."; msg2.style.opacity=1;  setTimeout(()=>go(q3),1100); };
+
+// Q3
+meBtn.onclick=()=>{ msg3.innerHTML="correct answer."; msg3.style.opacity=1; setTimeout(()=>go(q5),1100); };
+foodBtn.onclick=()=>{
+    msg3.innerHTML="wow. food over me.";
+    msg3.style.opacity=1;
+    vibrate(150);
+    setTimeout(()=>errorScreen.style.display="flex",900);
+    setTimeout(()=>{
+        errorScreen.style.display="none";
+        go(q5);
+    },2600);
+};
+
+// Q5
+yes5.onclick=()=>{ msg5e.innerHTML="good answer."; msg5e.style.opacity=1; setTimeout(()=>go(q6),1100); };
+idk5.onclick=()=>{
+    msg5e.innerHTML="wrong.";
+    msg5e.style.opacity=1;
+    vibrate(150);
+    setTimeout(()=>errorScreen.style.display="flex",900);
+    setTimeout(()=>{
+        errorScreen.style.display="none";
+        go(q6);
+    },2600);
+};
+
+// Q6
+yes6.onclick=()=>{ msg6e.innerHTML="ok next."; msg6e.style.opacity=1; setTimeout(()=>go(q7),1100); };
+no6.onclick =()=>{ msg6e.innerHTML="too bad."; msg6e.style.opacity=1; setTimeout(()=>go(q7),1100); };
+
+// Q7
+r10.onclick=()=>{ msg7e.innerHTML="correct."; msg7e.style.opacity=1; setTimeout(()=>go(q8),1100); };
+[r9,r8].forEach(btn=>{
+    btn.onclick=()=>{
+        vibrate(200);
+        errorScreen.style.display="flex";
+        setTimeout(()=>{
+            errorScreen.style.display="none";
+            go(q8);
+        },2500);
+    };
+});
+
+// Q8 (GPS feature added here)
+saveMe.onclick=()=>{
+    msg8e.innerHTML="good.";
+    msg8e.style.opacity=1;
+    setTimeout(()=>showGPS(),1200);
+};
+
+savePhone.onclick=()=>{
+    msg8e.innerHTML="wow.";
+    msg8e.style.opacity=1;
+    vibrate(250);
+    setTimeout(()=>errorScreen.style.display="flex",900);
+    setTimeout(()=>{
+        errorScreen.style.display="none";
+        showGPS();
+    },2600);
+};
+
+// Fake GPS feature (#14)
+function showGPS(){
+    gpsScreen.style.display="flex";
+    gpsText.innerHTML="locating...";
+    setTimeout(()=>gpsText.innerHTML="you are kinda far from me...",1200);
+    setTimeout(()=>gpsText.innerHTML="getting closer recommended.",2600);
+    setTimeout(()=>{
+        gpsScreen.style.display="none";
+        showHeartGame();
+    },4200);
+}
+
+// Heart tap mini-game
+let tapCount=0;
+function showHeartGame(){
+    tapCount=0;
+    heartText.innerHTML="tap the heart 10 times to continue";
+    heartGame.style.display="flex";
+}
+
+heartShape.onclick=()=>{
+    tapCount++;
+    vibrate(40);
+    heartText.innerHTML="taps: "+tapCount+" / 10";
+    if(tapCount>=10){
+        heartGame.style.display="none";
+        startLoading();
+    }
+};
+
+// Fake IQ test loading
+function startLoading(){
+    loadingScreen.style.display="flex";
+    loadingBarInner.style.width="0%";
+
+    let percent=0;
+    const texts=["checking your answers...","calculating iq...","analyzing loyalty...","almost done..."];
+
+    const interval=setInterval(()=>{
+        percent+=10;
+        loadingBarInner.style.width=percent+"%";
+        loadingText.innerHTML=texts[Math.floor(percent/25)] || texts[3];
+        if(percent>=100){
+            clearInterval(interval);
+            setTimeout(()=>{
+                loadingScreen.style.display="none";
+                finalSweet.style.display="flex";
+            },600);
+        }
+    },300);
+}
+
+// petals
+for(let i=0;i<35;i++){
+    let p=document.createElement("div");
+    p.className="petal";
+    p.style.left=Math.random()*100+"vw";
+    p.style.animationDuration=(4+Math.random()*4)+"s";
+    document.body.appendChild(p);
+}
+</script>
+
+</body>
+</html>
